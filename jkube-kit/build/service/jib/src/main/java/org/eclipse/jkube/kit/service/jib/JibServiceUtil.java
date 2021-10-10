@@ -39,6 +39,7 @@ import org.eclipse.jkube.kit.config.image.ImageConfiguration;
 import org.eclipse.jkube.kit.config.image.ImageName;
 import org.eclipse.jkube.kit.config.image.build.Arguments;
 import org.eclipse.jkube.kit.config.image.build.BuildConfiguration;
+import org.fusesource.jansi.Ansi;
 
 import com.google.cloud.tools.jib.api.CacheDirectoryCreationException;
 import com.google.cloud.tools.jib.api.Containerizer;
@@ -253,7 +254,11 @@ public class JibServiceUtil {
             if (progressDisplay.size() > 2 && progressDisplay.stream().allMatch(Objects::nonNull)) {
                 final String progressBar = progressDisplay.get(1);
                 final String task = progressDisplay.get(2);
-                System.out.println(ansi().cursorUpLine(1).eraseLine().a(JIB_LOG_PREFIX).a(progressBar).a(" ").a(task));
+                if (Ansi.isEnabled()) {
+                    System.out.println(ansi().cursorUpLine(1).eraseLine().a(JIB_LOG_PREFIX).a(progressBar).a(" ").a(task));
+                } else if (update.getProgress() == 1.0F) {
+                    System.out.println(task);
+                }
             }
         };
     }
